@@ -2,10 +2,13 @@ package com.qa.employee.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qa.employee.dto.EmployeeDto;
 import com.qa.employee.entity.Employee;
 import com.qa.employee.exception.EmployeeAlreadyExistsException;
 import com.qa.employee.exception.EmployeeNotFoundException;
@@ -16,6 +19,9 @@ public class EmployeeService implements IEmployeeService {
 	
 	@Autowired
 	EmployeeRepository empRepository;
+	
+	@Autowired
+	ModelMapper modelMapper;
 
 	@Override
 	public Employee saveEmployee(Employee employee) throws EmployeeAlreadyExistsException{
@@ -74,6 +80,33 @@ public class EmployeeService implements IEmployeeService {
 			}
 		
 		return status;
+	}
+
+	@Override
+	public List<Employee> findEmployeesByAgeAndDept(int age, String dept) {		
+		return empRepository.findEmployeeByAgeAndDept(age, dept);
+	}
+
+	@Override
+	public Double findTotalSalariesOfAllEmployees() {
+		return empRepository.findTotalSalariesOfAllEmployees();
+	}
+
+	@Override
+	public Employee updateEmployeeDetails(Employee employee) {
+		int rows = empRepository.updateEmpDetails(employee.getId(), employee.getEmail(), employee.getContactno());
+		System.out.println(rows);
+		
+		return empRepository.findById(employee.getId()).get();
+	}
+
+	@Override
+	public List<EmployeeDto> findEmployeeDetailsWithDto() {
+		return this.empRepository.findAll().stream().map(this::mapToEmployeeDto).collect(Collectors.toList());
+	}
+	
+	private EmployeeDto mapToEmployeeDto(Employee employee) {
+		return this.modelMapper.map(employee, EmployeeDto.class);
 	}
 
 }

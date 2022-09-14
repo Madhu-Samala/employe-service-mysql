@@ -1,7 +1,5 @@
 package com.qa.employee.controller;
 
-
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,14 +46,14 @@ public class EmployeeController {
 		responseEntity = new ResponseEntity<>(createdEmployee, HttpStatus.CREATED);
 		return responseEntity;
 	}
-	
+
 	@GetMapping("/employee")
-	public ResponseEntity<?> getAllEmployees(){
+	public ResponseEntity<?> getAllEmployees() {
 		return new ResponseEntity<>(this.empService.getAllEmployees(), HttpStatus.OK);
 	}
 
-	//employee/3 -> Path Variable
-	
+	// employee/3 -> Path Variable
+
 	@GetMapping("/employee/{id}")
 	public ResponseEntity<?> getEmployeeById(@PathVariable("id") int id) throws EmployeeNotFoundException {
 		Employee employee;
@@ -67,7 +65,8 @@ public class EmployeeController {
 		responseEntity = new ResponseEntity<>(employee, HttpStatus.OK);
 		return responseEntity;
 	}
-	//employee?id=3 -> RequestParameter
+
+	// employee?id=3 -> RequestParameter
 	@DeleteMapping("/employee")
 	public ResponseEntity<?> deleteEmployeeById(@RequestParam("id") int id) throws EmployeeNotFoundException {
 		boolean status;
@@ -76,18 +75,40 @@ public class EmployeeController {
 			responseEntity = new ResponseEntity<>("Employee Deleted Successfully !!!", HttpStatus.OK);
 		} catch (EmployeeNotFoundException e) {
 			throw e;
-		}		
+		} catch(Exception e) {
+			responseEntity = new ResponseEntity<>("Some internal error occured , please try again !!", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 		return responseEntity;
 	}
-	
+
 	@PutMapping("/employee")
-	public ResponseEntity<?> updateEmployee(@RequestBody Employee employee) throws EmployeeNotFoundException{
+	public ResponseEntity<?> updateEmployee(@RequestBody Employee employee) throws EmployeeNotFoundException {
 		try {
-			responseEntity = new ResponseEntity<>(empService.updateEmployee(employee),HttpStatus.OK);
-		} catch(EmployeeNotFoundException e) {
+			responseEntity = new ResponseEntity<>(empService.updateEmployee(employee), HttpStatus.OK);
+		} catch (EmployeeNotFoundException e) {
 			throw e;
-		}		
+		}
 		return responseEntity;
 	}
+
+	@GetMapping("/employee/age/{age}/dept/{dept}")
+	public ResponseEntity<?> getEmployeeByAgeAndDept(@PathVariable("age") int age, @PathVariable("dept") String dept) {
+		return new ResponseEntity<>(empService.findEmployeesByAgeAndDept(age, dept), HttpStatus.OK);
+	}
 	
+	@GetMapping("/employee/salary")
+	public ResponseEntity<?> getTotalSalariesOfAllEmployees(){
+		return new ResponseEntity<>(empService.findTotalSalariesOfAllEmployees(),HttpStatus.OK);
+	}
+	
+	@PutMapping("/employee/updatedetails")
+	public ResponseEntity<?> updateEmpDetails(@RequestBody Employee employee){
+		return new ResponseEntity<>(empService.updateEmployeeDetails(employee),HttpStatus.OK);
+	}
+
+	
+	@GetMapping("/employee/dto-details")
+	public ResponseEntity<?> getEmpDtoDetails(){
+		return new ResponseEntity<>(empService.findEmployeeDetailsWithDto(),HttpStatus.OK);
+	}
 }

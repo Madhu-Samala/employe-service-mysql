@@ -54,6 +54,12 @@ public class Employee {
 	@Column(name = "emp_salary")
 	private double salary;
 	
+	@Column(name = "emp_age")
+	private int age;
+	
+	@Column(name = "emp_dept")
+	private String department;
+	
 	
 	
 
